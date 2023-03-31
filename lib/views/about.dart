@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:remixicon/remixicon.dart';
 
 // mine
@@ -7,7 +6,8 @@ import 'package:mobile/style/texts.dart';
 import 'package:mobile/style/colors.dart';
 
 // my component
-import 'package:mobile/components/card_comicchapter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../services/auth.dart';
 // import 'package:mobile/components/card_comichero.dart';
@@ -19,6 +19,7 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPageState extends State<AboutPage> {
   String code = '';
+  bool _isLogoutLoading = false;
 
   @override
   void initState() {
@@ -33,9 +34,16 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   void _handleLogout(BuildContext ctx) async {
+    setState(() {
+      _isLogoutLoading = true;
+    });
     var call = AuthCall(ctx, 'account/logout', {'code': code}, true);
 
     await call.post(call.logout());
+
+    setState(() {
+      _isLogoutLoading = false;
+    });
   }
 
   @override
@@ -47,7 +55,7 @@ class _AboutPageState extends State<AboutPage> {
           ListView(
             children: <Widget>[
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                 child: Row(
                   children: [
                     GestureDetector(
@@ -70,24 +78,32 @@ class _AboutPageState extends State<AboutPage> {
                       style: MyTexts().header,
                     ),
                     const Spacer(),
-                    Container(
-                        width: 40,
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              elevation: 0,
-                              padding: EdgeInsets.zero),
-                          onPressed: () {
-                            _handleLogout(context);
-                          },
-                          child: const Icon(
-                            Remix.logout_circle_line,
-                            color: Colors.redAccent,
-                            size: 32,
-                          ),
-                        )),
+                    _isLogoutLoading
+                        ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: MyColors().PRIMARY,
+                            ),
+                          )
+                        : Container(
+                            width: 40,
+                            height: 40,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  padding: EdgeInsets.zero),
+                              onPressed: () {
+                                _handleLogout(context);
+                              },
+                              child: const Icon(
+                                Remix.logout_circle_line,
+                                color: Colors.redAccent,
+                                size: 32,
+                              ),
+                            )),
                   ],
                 ),
               ),
@@ -125,10 +141,15 @@ class _AboutPageState extends State<AboutPage> {
                       const SizedBox(
                         height: 32,
                       ),
-                      LinkCard(title: 'Comikaze?', link: ''),
-                      LinkCard(title: 'Ketentuan Pengguna', link: ''),
-                      LinkCard(title: 'Tagihan', link: ''),
-                      LinkCard(title: 'Chocoding?', link: '')
+                      LinkCard(
+                          title: 'Comikaze?',
+                          link:
+                              'https://docs.google.com/document/d/1Vi3GN2JznHFsc-cGaQuzm8c47_oj2_8QW6ZyrFANkJ4/edit?usp=share_link'),
+                      LinkCard(
+                          title: 'Kesepakatan Pengguna',
+                          link:
+                              'https://docs.google.com/document/d/1Vi3GN2JznHFsc-cGaQuzm8c47_oj2_8QW6ZyrFANkJ4/edit?usp=share_link'),
+                      LinkCard(title: 'Donasi ☕', link: ''),
                     ],
                   ))
             ],
@@ -148,7 +169,16 @@ class LinkCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {},
+        onTap: () async {
+          if (!await launchUrl(Uri.parse(link))) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  'URL tidak bisa dibuka',
+                  style: MyTexts().mini_text_w,
+                )));
+          }
+        },
         child: Container(
           margin: EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(

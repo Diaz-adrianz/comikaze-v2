@@ -46,14 +46,15 @@ class AuthCall extends Apicall {
       throw MyException(res.data['message']);
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Hello'),
-      backgroundColor: Colors.green,
-    ));
+    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //   content: Text('Hello'),
+    //   backgroundColor: Colors.green,
+    // ));
 
     // BACKEND PROCESS
     var prefs = await SharedPreferences.getInstance();
     prefs.setString('code', res.data['code']);
+    prefs.setString('nama', res.data['name']);
 
     Navigator.of(context)
         .pushReplacement(MaterialPageRoute(builder: (context) => MainPage()));
@@ -68,7 +69,7 @@ Future<String?> CheckLogin(context) async {
 
   if (code == null) {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => LoginPage()));
+        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   return code;

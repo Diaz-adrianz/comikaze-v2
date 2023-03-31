@@ -34,12 +34,13 @@ class ComicDetail extends StatelessWidget {
             width: 100,
             height: 120,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Image(
-                image: NetworkImage(image_uri, scale: 1.0),
-                fit: BoxFit.cover,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(14),
+                child: FadeInImage(
+                  fadeInDuration: const Duration(milliseconds: 1),
+                  fit: BoxFit.cover,
+                  placeholder: const AssetImage('assets/images/loading.gif'),
+                  image: NetworkImage(image_uri),
+                )),
           ),
           Expanded(
               child: Column(

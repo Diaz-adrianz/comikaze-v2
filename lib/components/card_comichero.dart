@@ -32,11 +32,14 @@ class ComicHero extends StatelessWidget {
                 width: 180,
                 height: 180,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image(
-                      image: NetworkImage(this.image_uri, scale: 1.0),
-                      fit: BoxFit.cover),
-                ),
+                    borderRadius: BorderRadius.circular(14),
+                    child: FadeInImage(
+                      fit: BoxFit.cover,
+                      fadeInDuration: Duration(milliseconds: 1),
+                      placeholder:
+                          const AssetImage('assets/images/loading.gif'),
+                      image: NetworkImage(image_uri),
+                    )),
               ),
               const SizedBox(
                 height: 4,

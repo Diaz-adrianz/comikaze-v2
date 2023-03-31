@@ -11,18 +11,20 @@ import 'package:mobile/style/colors.dart';
 // my component
 import 'package:mobile/components/card_comicchapter.dart';
 
+import '../components/card_comicdetail.dart';
 import '../models/local.dart';
+import 'detail.dart';
 // import 'package:mobile/components/card_comichero.dart';
 
-class HistoryPage extends StatefulWidget {
+class LikedPage extends StatefulWidget {
   @override
-  _HistoryPageState createState() => _HistoryPageState();
+  _LikedPageState createState() => _LikedPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage> {
+class _LikedPageState extends State<LikedPage> {
   bool _isLoading = false;
   LocalSave? _localSave;
-  List<LocalSaveModel>? _history = [];
+  List<LocalSaveModel>? _liked = [];
 
   @override
   void initState() {
@@ -32,27 +34,27 @@ class _HistoryPageState extends State<HistoryPage> {
         _isLoading = true;
       });
 
-      LocalSave local = LocalSave('histo', _history!);
+      LocalSave local = LocalSave('liked', _liked!);
       List<LocalSaveModel> data = await local.get();
 
       setState(() {
         _localSave = local;
-        _history = data;
+        _liked = data;
         _isLoading = false;
       });
     });
   }
 
   void _handleDeleteHistory(int i) async {
-    List<LocalSaveModel> histsToDel = _history!;
+    List<LocalSaveModel> likedsToDel = _liked!;
 
-    histsToDel.removeAt(i);
+    likedsToDel.removeAt(i);
 
-    _localSave!.data = histsToDel;
+    _localSave!.data = likedsToDel;
     _localSave!.set();
 
     setState(() {
-      _history = histsToDel;
+      _liked = likedsToDel;
     });
   }
 
@@ -116,7 +118,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                 )),
                               )),
                           Text(
-                            'Riwayat Baca (${_history!.length.toString()})',
+                            'Favorit (${_liked!.length.toString()})',
                             style: MyTexts().header,
                           ),
                         ],
@@ -135,43 +137,38 @@ class _HistoryPageState extends State<HistoryPage> {
                             const SizedBox(
                               height: 8,
                             ),
-                            for (LocalSaveModel item in _history!)
+                            for (LocalSaveModel item in _liked!)
                               GestureDetector(
-                                onLongPress: () {
-                                  // print(_history!.indexOf(item));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    backgroundColor: MyColors().BLACK,
-                                    content: Text(
-                                      'Lanjutkan hapus ${item.title.toString()}? ',
-                                      style: MyTexts().mini_text_w,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    action: SnackBarAction(
-                                      label: 'Ya',
-                                      textColor: Colors.red,
-                                      onPressed: () {
-                                        _handleDeleteHistory(
-                                            _history!.indexOf(item));
-                                      },
-                                    ),
-                                  ));
-                                },
-                                child: ComicChapter(
-                                    title: item.title
-                                        .toString()
-                                        .replaceAll('Komik ', ''),
-                                    subtitle: item.subtitle
-                                        .toString()
-                                        .substring(
-                                            item.subtitle
-                                                .toString()
-                                                .indexOf('chapter'),
-                                            item.subtitle.toString().length),
-                                    intent: ReadPage(item.title.toString(),
-                                        item.endpoint.toString())),
-                              )
+                                  onLongPress: () {
+                                    // print(_history!.indexOf(item));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      backgroundColor: MyColors().BLACK,
+                                      content: Text(
+                                        'Lanjutkan hapus ${item.title.toString()} dari favorit? ',
+                                        style: MyTexts().mini_text_w,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      action: SnackBarAction(
+                                        label: 'Ya',
+                                        textColor: Colors.red,
+                                        onPressed: () {
+                                          _handleDeleteHistory(
+                                              _liked!.indexOf(item));
+                                        },
+                                      ),
+                                    ));
+                                  },
+                                  child: ComicDetail(
+                                      image_uri: item.thumb
+                                          .toString()
+                                          .replaceAll('Komik', ''),
+                                      title: item.title.toString(),
+                                      type: item.subtitle.toString(),
+                                      updatedOn: item.updated_on.toString(),
+                                      intent:
+                                          DetailPage(item.endpoint.toString())))
                           ],
                         ))
                   ],

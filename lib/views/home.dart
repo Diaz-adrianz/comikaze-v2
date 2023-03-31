@@ -5,6 +5,7 @@ import 'package:mobile/services/comics.dart';
 import 'package:mobile/services/local.dart';
 import 'package:mobile/style/colors.dart';
 import 'package:mobile/views/read.dart';
+import 'package:mobile/views/saved.dart';
 import 'package:remixicon/remixicon.dart';
 
 // mine
@@ -17,11 +18,13 @@ import 'package:mobile/components/card_comichero.dart';
 
 // PAGES
 import 'package:mobile/views/history.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/comics.dart';
 import '../models/local.dart';
 import 'about.dart';
 import 'detail.dart';
+import 'favorites.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -32,11 +35,31 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = false;
   List<Comic> _hotComic = [];
   List<LocalSaveModel>? _history;
+  String greet = 'Ohayou';
+  String? name = '';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var currentHour = DateTime.now().hour;
+      String greety = 'Ohayou';
+
+      if (currentHour <= 24) {
+        greety = 'oyasumi';
+      } else if (currentHour <= 19) {
+        greety = 'Konbawa';
+      } else if (currentHour <= 14) {
+        greety = 'Konnichiwa';
+      }
+
+      SharedPreferences sp = await SharedPreferences.getInstance();
+
+      setState(() {
+        greet = greety;
+        name = sp.getString('name');
+      });
+
       LocalSave local = LocalSave('histo', <LocalSaveModel>[]);
       List<LocalSaveModel> localComics = await local.get();
 
@@ -45,8 +68,8 @@ class _HomePageState extends State<HomePage> {
         _isLoading = true;
       });
 
-      var call_hotComic = ComicCall(context, 'hot/acak', {}, false);
-      List<Comic> comics = await call_hotComic.get(call_hotComic.getComics());
+      var callHotcomic = ComicCall(context, 'hot/acak', {}, false);
+      List<Comic> comics = await callHotcomic.get(callHotcomic.getComics());
 
       setState(() {
         _hotComic = comics.sublist(0, 10);
@@ -74,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Ohayou, Darling',
+                          '$greet, $name',
                           style: MyTexts().header_w,
                         ),
                         _isLoading
@@ -128,18 +151,19 @@ class _HomePageState extends State<HomePage> {
                             height: 8,
                           ),
                           ComicChapter(
-                              title: _history![0].title.toString().replaceAll(
-                                  'Komik', ''),
+                              title: _history![0]
+                                  .title
+                                  .toString()
+                                  .replaceAll('Komik ', ''),
                               subtitle: _history![0]
                                   .subtitle
                                   .toString()
-                                  .replaceAll(
+                                  .substring(
                                       _history![0]
-                                          .title
+                                          .subtitle
                                           .toString()
-                                          .replaceAll('Komik ', '')
-                                          .toLowerCase(),
-                                      ''),
+                                          .indexOf('chapter'),
+                                      _history![0].subtitle.toString().length),
                               intent: ReadPage(_history![0].title.toString(),
                                   _history![0].endpoint.toString()))
                         ]),
@@ -159,10 +183,9 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     CardMenu(
                         context, Remix.history_fill, 'Riwayat', HistoryPage()),
+                    CardMenu(context, Remix.heart_fill, 'Favorit', LikedPage()),
                     CardMenu(
-                        context, Remix.heart_fill, 'Favorit', HistoryPage()),
-                    CardMenu(context, Remix.bookmark_fill, 'Disimpan',
-                        HistoryPage()),
+                        context, Remix.bookmark_fill, 'Disimpan', SavedPage()),
                     CardMenu(context, Remix.information_fill, 'Tentang',
                         AboutPage()),
                   ],

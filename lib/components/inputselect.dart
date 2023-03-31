@@ -65,7 +65,7 @@ Widget InputSelect(BuildContext ctx, Genre selected,
                                                 width: 1,
                                                 color: MyColors().SILVER))),
                                     child: Text(
-                                      item.endpoint.toString(),
+                                      item.genreName.toString(),
                                       style: MyTexts().subheader,
                                     ),
                                   ),

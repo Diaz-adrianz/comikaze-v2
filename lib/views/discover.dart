@@ -71,8 +71,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                               color: MyColors().PRIMARY,
                             ),
                           )
-                        : const SizedBox(
-                            height: 4,
+                        : Text(
+                            _comics.length.toString(),
+                            style: MyTexts().mini_text_w,
                           ),
                   ],
                 ),

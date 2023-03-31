@@ -122,14 +122,17 @@ class _ReadPageState extends State<ReadPage> {
                     for (ChapterImage img in _chapters!.chapterImage!)
                       Container(
                           width: MediaQuery.of(context).size.width,
-                          constraints: const BoxConstraints(minHeight: 300),
+                          constraints: const BoxConstraints(minHeight: 200),
                           child: InteractiveViewer(
-                              boundaryMargin: EdgeInsets.all(0),
+                              boundaryMargin: const EdgeInsets.all(0),
                               minScale: 1,
                               maxScale: 3,
-                              child: FadeInImage.memoryNetwork(
-                                placeholder: kTransparentImage,
-                                image: img.chapterImageLink.toString(),
+                              child: FadeInImage(
+                                fadeInDuration: const Duration(milliseconds: 1),
+                                placeholder: const AssetImage(
+                                    'assets/images/loading.gif'),
+                                image: NetworkImage(
+                                    img.chapterImageLink.toString()),
                               ))),
                     const SizedBox(
                       height: 90,
@@ -137,7 +140,7 @@ class _ReadPageState extends State<ReadPage> {
                   ],
                 ),
                 Positioned(
-                  top: 32,
+                  top: 40,
                   left: 24,
                   child: Container(
                       width: 40,

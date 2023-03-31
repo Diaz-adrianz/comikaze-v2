@@ -5,6 +5,9 @@ import 'package:mobile/services/auth.dart';
 import 'package:mobile/style/colors.dart';
 import 'package:mobile/style/texts.dart';
 import 'package:mobile/components/input.dart';
+import 'package:remixicon/remixicon.dart';
+
+import '../components/inputicon.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -70,19 +73,20 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
             Container(
-                margin: EdgeInsets.only(top: 24),
-                child: TextField(
-                    controller: _phone,
-                    cursorColor: MyColors().PRIMARY,
-                    style: MyTexts().text,
-                    decoration: MyInput().basic("08.."))),
+                margin: const EdgeInsets.only(top: 24),
+                child: InputIcon(
+                    _phone, (value) {}, 'Nomor telepon', Remix.phone_fill)
+
+                //  TextField(
+                //     controller: _phone,
+                //     cursorColor: MyColors().PRIMARY,
+                //     style: MyTexts().text,
+                //     decoration: MyInput().basic("08.."))
+                ),
             Container(
-                margin: EdgeInsets.only(top: 16),
-                child: TextField(
-                    controller: _code,
-                    cursorColor: MyColors().PRIMARY,
-                    style: MyTexts().text,
-                    decoration: MyInput().basic("# # # # #"))),
+                margin: const EdgeInsets.only(top: 16),
+                child:
+                    InputIcon(_code, (value) {}, 'Kode akses', Remix.key_fill)),
             Container(
               margin: EdgeInsets.only(top: 16),
               width: double.infinity,

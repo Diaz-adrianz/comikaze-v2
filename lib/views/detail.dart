@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:mobile/components/card_comicdetail.dart';
 import 'package:mobile/models/comic.dart';
+import 'package:mobile/models/local.dart';
+import 'package:mobile/views/favorites.dart';
 import 'package:mobile/views/read.dart';
+import 'package:mobile/views/saved.dart';
 import 'package:remixicon/remixicon.dart';
 
 // mine
 import 'package:mobile/style/texts.dart';
 import 'package:mobile/style/colors.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../models/chapters.dart';
-import '../models/comics.dart';
 import '../services/comics.dart';
+import '../services/local.dart';
 
 // MY COMPONENTS
 class DetailPage extends StatefulWidget {
@@ -25,6 +27,15 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   String endpoint;
   bool _isLoading = false;
+  bool _isLiked = false;
+  bool _isSaved = false;
+  int _isLikedPos = 0;
+  int _isSavedPos = 0;
+
+  // List<LocalSaveModel>? _history = [];
+  // List<LocalSaveModel>? _history = [];
+
+  LocalSave? _localSaveSaved, _localSaveLiked;
   ComicModel? _comic;
   List<ChaptersModel>? _chapters;
 
@@ -41,12 +52,150 @@ class _DetailPageState extends State<DetailPage> {
       var callComic = ComicCall(context, 'detail/${endpoint}', {}, false);
       ComicModel comic = await callComic.get(callComic.getDetail());
 
+      IsLiked();
+      IsSaved();
+
       setState(() {
         _comic = comic;
         _chapters = comic.chapter!;
         _isLoading = false;
       });
     });
+  }
+
+  void IsLiked() async {
+    LocalSave local = LocalSave('liked', <LocalSaveModel>[]);
+    List<LocalSaveModel> likedComic = await local.get();
+    bool yes = false;
+    int pos = 0;
+
+    for (var comic in likedComic) {
+      if (comic.title == _comic?.title) {
+        yes = true;
+        pos = likedComic.indexOf(comic);
+      }
+    }
+
+    setState(() {
+      _localSaveLiked = local;
+      _isLiked = yes;
+      _isLikedPos = pos;
+    });
+  }
+
+  void IsSaved() async {
+    LocalSave local = LocalSave('saved', <LocalSaveModel>[]);
+    List<LocalSaveModel> savedComic = await local.get();
+    bool yes = false;
+    int pos = 0;
+
+    for (var comic in savedComic) {
+      if (comic.title == _comic?.title) {
+        yes = true;
+        pos = savedComic.indexOf(comic);
+      }
+    }
+
+    setState(() {
+      _localSaveSaved = local;
+      _isSaved = yes;
+      _isSavedPos = pos;
+    });
+  }
+
+  void likeThis(ctx) async {
+    List<LocalSaveModel> likedComics = await _localSaveLiked!.get();
+    bool yes = _isLiked;
+    String message = '${_comic!.title} ditambahkan ke favorit';
+
+    if (!_isLiked) {
+      LocalSaveModel newLikedComic = LocalSaveModel();
+      newLikedComic.title = _comic?.title;
+      newLikedComic.subtitle = _comic?.type;
+      newLikedComic.endpoint = _comic?.mangaEndpoint;
+      newLikedComic.thumb = _comic?.thumb;
+      newLikedComic.updated_on = _comic?.status;
+
+      likedComics.insert(0, newLikedComic);
+      yes = true;
+    } else {
+      likedComics.removeAt(_isLikedPos);
+      message = '${_comic!.title} dihapus dari favorit';
+      yes = false;
+    }
+
+    _localSaveLiked!.data = likedComics;
+    _localSaveLiked!.set();
+
+    setState(() {
+      _isLiked = yes;
+      _isLikedPos = 0;
+    });
+
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+      backgroundColor: MyColors().BLACK,
+      content: Text(
+        message,
+        style: MyTexts().mini_text_w,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      action: SnackBarAction(
+        label: 'Lihat',
+        textColor: MyColors().PRIMARY,
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => LikedPage()));
+        },
+      ),
+    ));
+  }
+
+  void SaveThis(ctx) async {
+    List<LocalSaveModel> savedComics = await _localSaveSaved!.get();
+    String message = '${_comic!.title} telah disimpan';
+
+    if (!_isSaved) {
+      LocalSaveModel newSavedComic = LocalSaveModel();
+      newSavedComic.title = _comic?.title;
+      newSavedComic.subtitle = _comic?.type;
+      newSavedComic.endpoint = _comic?.mangaEndpoint;
+      newSavedComic.thumb = _comic?.thumb;
+      newSavedComic.updated_on = _comic?.status;
+
+      savedComics.insert(0, newSavedComic);
+      _isSaved = true;
+    } else {
+      savedComics.removeAt(_isSavedPos);
+      message = '${_comic!.title} dihapus dari daftar simpan';
+      _isSaved = false;
+    }
+
+    _localSaveSaved!.data = savedComics;
+    _localSaveSaved!.set();
+
+    setState(() {
+      _isLiked = _isSaved;
+      _isLikedPos = 0;
+    });
+
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+      backgroundColor: MyColors().BLACK,
+      content: Text(
+        message,
+        style: MyTexts().mini_text_w,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      action: SnackBarAction(
+        label: 'Lihat',
+        textColor: MyColors().PRIMARY,
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => SavedPage()));
+        },
+      ),
+    ));
   }
 
   @override
@@ -73,7 +222,7 @@ class _DetailPageState extends State<DetailPage> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         backgroundColor: MyColors().SILVER,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16))),
@@ -90,7 +239,7 @@ class _DetailPageState extends State<DetailPage> {
                 ListView(
                   children: <Widget>[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                       child: Row(
                         children: [
                           GestureDetector(
@@ -116,7 +265,9 @@ class _DetailPageState extends State<DetailPage> {
                           const Spacer(),
                           GestureDetector(
                               onTap: () {
-                                Navigator.pop(context);
+                                Share.share(
+                                    'Saya menemukan ${_comic?.type} bagus berjudul ${_comic?.title} di aplikasi baca manga COMIKAZE.\n\nAyo unduk aplikasinya di link berikut (GRATIS) ',
+                                    subject: 'Look what I made!');
                               },
                               child: Container(
                                 margin: const EdgeInsets.only(right: 16),
@@ -161,17 +312,25 @@ class _DetailPageState extends State<DetailPage> {
                                     backgroundColor: Colors.transparent,
                                     elevation: 0,
                                     padding: EdgeInsets.zero),
-                                onPressed: () {},
+                                onPressed: () {
+                                  likeThis(context);
+                                },
                                 child: Container(
                                   width: 48,
                                   padding: const EdgeInsets.all(8),
                                   height: 48,
                                   decoration: BoxDecoration(
-                                      color: MyColors().PRIMARY_TINT,
+                                      color: _isLiked
+                                          ? MyColors().PRIMARY_TINT
+                                          : MyColors().SILVER,
                                       shape: BoxShape.circle),
                                   child: Icon(
-                                    Remix.heart_fill,
-                                    color: MyColors().PRIMARY,
+                                    _isLiked
+                                        ? Remix.heart_fill
+                                        : Remix.heart_line,
+                                    color: _isLiked
+                                        ? MyColors().PRIMARY
+                                        : MyColors().SECONDARY,
                                     size: 32,
                                   ),
                                 ),
@@ -184,35 +343,29 @@ class _DetailPageState extends State<DetailPage> {
                                     backgroundColor: Colors.transparent,
                                     elevation: 0,
                                     padding: EdgeInsets.zero),
-                                onPressed: () {},
+                                onPressed: () {
+                                  SaveThis(context);
+                                },
                                 child: Container(
                                   width: 48,
                                   padding: const EdgeInsets.all(8),
                                   height: 48,
                                   decoration: BoxDecoration(
-                                      color: MyColors().SILVER,
+                                      color: _isSaved
+                                          ? MyColors().PRIMARY_TINT
+                                          : MyColors().SILVER,
                                       shape: BoxShape.circle),
                                   child: Icon(
-                                    Remix.bookmark_line,
-                                    color: MyColors().SECONDARY,
+                                    _isSaved
+                                        ? Remix.bookmark_fill
+                                        : Remix.bookmark_line,
+                                    color: _isSaved
+                                        ? MyColors().PRIMARY
+                                        : MyColors().SECONDARY,
                                     size: 32,
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              _isLoading
-                                  ? SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        color: MyColors().PRIMARY,
-                                      ),
-                                    )
-                                  : const SizedBox(
-                                      height: 4,
-                                    ),
                             ],
                           )
                         ],
@@ -375,6 +528,8 @@ class _DetailPageState extends State<DetailPage> {
                                           )),
                                           builder: (context) {
                                             return DraggableScrollableSheet(
+                                              snapAnimationDuration:
+                                                  Duration(seconds: 5),
                                               expand: false,
                                               // initialChildSize: 0.5,
                                               maxChildSize: 0.9,

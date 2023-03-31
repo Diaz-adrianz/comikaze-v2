@@ -168,7 +168,10 @@ class _FilterPageState extends State<FilterPage> {
                               child: Image.asset('assets/images/null.png'),
                             ),
                           )
-                        : const SizedBox(),
+                        : Text(
+                            _comics.length.toString(),
+                            style: MyTexts().mini_text_w,
+                          ),
                     for (Comic com in _comics)
                       ComicDetail(
                           image_uri: com.thumb.toString(),
