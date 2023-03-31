@@ -6,6 +6,7 @@ import 'package:mobile/style/colors.dart';
 import 'package:mobile/style/texts.dart';
 import 'package:mobile/components/input.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../components/inputicon.dart';
 
@@ -88,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                 child:
                     InputIcon(_code, (value) {}, 'Kode akses', Remix.key_fill)),
             Container(
-              margin: EdgeInsets.only(top: 16),
+              margin: const EdgeInsets.only(top: 16),
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _isLoading
@@ -97,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                         _handleLogin(context);
                       },
                 style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     backgroundColor: MyColors().PRIMARY,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16))),
@@ -108,17 +109,27 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 36),
+              margin: const EdgeInsets.only(top: 36),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Belum punya?",
+                    "Belum punya? ",
                     style: MyTexts().mini_text,
                   ),
                   GestureDetector(
-                    onTap: () => {},
-                    child: Text("Daftar", style: MyTexts().mini_text),
+                    onTap: () async {
+                      if (!await launch('https://forms.gle/D6UA5DbB4L98adXi9',
+                          forceWebView: false)) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(
+                              'URL tidak bisa dibuka',
+                              style: MyTexts().mini_text_w,
+                            )));
+                      }
+                    },
+                    child: Text("Daftar", style: MyTexts().mini_text_p),
                   )
                 ],
               ),

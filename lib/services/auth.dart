@@ -31,6 +31,7 @@ class AuthCall extends Apicall {
     // BACKEND PROCESS
     var prefs = await SharedPreferences.getInstance();
     prefs.remove('code');
+    prefs.remove('nama');
 
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);

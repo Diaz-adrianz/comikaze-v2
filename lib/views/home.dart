@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         greet = greety;
-        name = sp.getString('name');
+        name = sp.getString('nama');
       });
 
       LocalSave local = LocalSave('histo', <LocalSaveModel>[]);
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
         _isLoading = true;
       });
 
-      var callHotcomic = ComicCall(context, 'hot/acak', {}, false);
+      var callHotcomic = ComicCall(context, 'warna/acak', {}, false);
       List<Comic> comics = await callHotcomic.get(callHotcomic.getComics());
 
       setState(() {

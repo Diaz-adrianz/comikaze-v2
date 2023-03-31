@@ -63,9 +63,9 @@ class _AboutPageState extends State<AboutPage> {
                           Navigator.pop(context);
                         },
                         child: Container(
-                          margin: EdgeInsets.only(right: 16),
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                          margin: const EdgeInsets.only(right: 16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 0),
                           child: Center(
                               child: Icon(
                             Remix.arrow_left_s_line,
@@ -111,6 +111,7 @@ class _AboutPageState extends State<AboutPage> {
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 90),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
                         child: Text(
@@ -132,11 +133,10 @@ class _AboutPageState extends State<AboutPage> {
                       const SizedBox(
                         height: 16,
                       ),
-                      Center(
-                        child: Text(
-                          'Setelah Anda mendapatkan kode akses berarti Anda telah membaca profil dan perjanjian pengguna kami.',
-                          style: MyTexts().text,
-                        ),
+                      Text(
+                        'Jaga baik-baik kode akses anda.',
+                        style: MyTexts().text,
+                        textAlign: TextAlign.start,
                       ),
                       const SizedBox(
                         height: 32,
@@ -149,7 +149,9 @@ class _AboutPageState extends State<AboutPage> {
                           title: 'Kesepakatan Pengguna',
                           link:
                               'https://docs.google.com/document/d/1Vi3GN2JznHFsc-cGaQuzm8c47_oj2_8QW6ZyrFANkJ4/edit?usp=share_link'),
-                      LinkCard(title: 'Donasi ☕', link: ''),
+                      LinkCard(
+                          title: 'Donasi ☕',
+                          link: 'https://link.dana.id/qr/xuxue3sh'),
                     ],
                   ))
             ],
@@ -170,7 +172,7 @@ class LinkCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          if (!await launchUrl(Uri.parse(link))) {
+          if (!await launch(link, forceWebView: false)) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Colors.red,
                 content: Text(

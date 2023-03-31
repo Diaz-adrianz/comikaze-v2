@@ -25,6 +25,9 @@ class ComicDetail extends StatelessWidget {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => intent));
       },
+      onLongPress: () {
+        print(image_uri.trim().replaceAll('\n', ''));
+      },
       child: Container(
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.only(bottom: 16),
@@ -39,7 +42,7 @@ class ComicDetail extends StatelessWidget {
                   fadeInDuration: const Duration(milliseconds: 1),
                   fit: BoxFit.cover,
                   placeholder: const AssetImage('assets/images/loading.gif'),
-                  image: NetworkImage(image_uri),
+                  image: NetworkImage(image_uri.trim().replaceAll('\n', '')),
                 )),
           ),
           Expanded(

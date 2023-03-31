@@ -107,8 +107,9 @@ class _FilterPageState extends State<FilterPage> {
                               color: MyColors().PRIMARY,
                             ),
                           )
-                        : const SizedBox(
-                            height: 4,
+                        : Text(
+                            _comics.length.toString(),
+                            style: MyTexts().mini_text,
                           ),
                   ],
                 ),
@@ -168,10 +169,7 @@ class _FilterPageState extends State<FilterPage> {
                               child: Image.asset('assets/images/null.png'),
                             ),
                           )
-                        : Text(
-                            _comics.length.toString(),
-                            style: MyTexts().mini_text_w,
-                          ),
+                        : const SizedBox(),
                     for (Comic com in _comics)
                       ComicDetail(
                           image_uri: com.thumb.toString(),

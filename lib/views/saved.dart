@@ -161,10 +161,10 @@ class _SavedPageState extends State<SavedPage> {
                                     ));
                                   },
                                   child: ComicDetail(
-                                      image_uri: item.thumb
+                                      image_uri: item.thumb.toString(),
+                                      title: item.title
                                           .toString()
                                           .replaceAll('Komik', ''),
-                                      title: item.title.toString(),
                                       type: item.subtitle.toString(),
                                       updatedOn: item.updated_on.toString(),
                                       intent:

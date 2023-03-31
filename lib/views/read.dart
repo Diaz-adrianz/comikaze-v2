@@ -8,8 +8,8 @@ import 'package:remixicon/remixicon.dart';
 // mine
 import 'package:mobile/style/texts.dart';
 import 'package:mobile/style/colors.dart';
-import 'package:transparent_image/transparent_image.dart';
 
+import '../components/imagecomic.dart';
 import '../models/chapter.dart';
 import '../services/comics.dart';
 
@@ -103,12 +103,12 @@ class _ReadPageState extends State<ReadPage> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: MyColors().SILVER,
                       elevation: 0,
                     ),
                     child: Text(
                       "Kembali",
-                      style: MyTexts().subheader_w,
+                      style: MyTexts().subheader_s,
                     ),
                   ),
                 ],
@@ -123,17 +123,7 @@ class _ReadPageState extends State<ReadPage> {
                       Container(
                           width: MediaQuery.of(context).size.width,
                           constraints: const BoxConstraints(minHeight: 200),
-                          child: InteractiveViewer(
-                              boundaryMargin: const EdgeInsets.all(0),
-                              minScale: 1,
-                              maxScale: 3,
-                              child: FadeInImage(
-                                fadeInDuration: const Duration(milliseconds: 1),
-                                placeholder: const AssetImage(
-                                    'assets/images/loading.gif'),
-                                image: NetworkImage(
-                                    img.chapterImageLink.toString()),
-                              ))),
+                          child: ImageComic(img.chapterImageLink.toString())),
                     const SizedBox(
                       height: 90,
                     )
@@ -239,3 +229,9 @@ class _ReadPageState extends State<ReadPage> {
     );
   }
 }
+
+
+// FadeInImage(
+//           fadeInDuration: const Duration(milliseconds: 1),
+//           placeholder: const AssetImage('assets/images/loading.gif'),
+//           image: NetworkImage(widget.path)

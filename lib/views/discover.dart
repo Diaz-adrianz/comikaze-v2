@@ -58,6 +58,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'Discover',
@@ -73,7 +74,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           )
                         : Text(
                             _comics.length.toString(),
-                            style: MyTexts().mini_text_w,
+                            style: MyTexts().mini_text,
                           ),
                   ],
                 ),

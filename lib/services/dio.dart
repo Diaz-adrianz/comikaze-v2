@@ -60,12 +60,12 @@ class Apicall {
       } else {
         print(e);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Application Error'),
+          content: Text('Something wrong'),
           backgroundColor: Colors.redAccent,
         ));
       }
 
-      return true;
+      return [];
     }
   }
 

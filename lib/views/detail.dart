@@ -39,6 +39,8 @@ class _DetailPageState extends State<DetailPage> {
   ComicModel? _comic;
   List<ChaptersModel>? _chapters;
 
+  LocalSaveModel? _histRead;
+
   _DetailPageState(this.endpoint);
 
   @override
@@ -52,6 +54,7 @@ class _DetailPageState extends State<DetailPage> {
       var callComic = ComicCall(context, 'detail/${endpoint}', {}, false);
       ComicModel comic = await callComic.get(callComic.getDetail());
 
+      IsHistory();
       IsLiked();
       IsSaved();
 
@@ -61,6 +64,19 @@ class _DetailPageState extends State<DetailPage> {
         _isLoading = false;
       });
     });
+  }
+
+  void IsHistory() async {
+    LocalSave local = LocalSave('histo', <LocalSaveModel>[]);
+    List<LocalSaveModel> histsComic = await local.get();
+
+    for (LocalSaveModel h in histsComic) {
+      if (h.title == _comic!.title) {
+        setState(() {
+          _histRead = h;
+        });
+      }
+    }
   }
 
   void IsLiked() async {
@@ -175,8 +191,8 @@ class _DetailPageState extends State<DetailPage> {
     _localSaveSaved!.set();
 
     setState(() {
-      _isLiked = _isSaved;
-      _isLikedPos = 0;
+      _isSaved = _isSaved;
+      _isSavedPos = 0;
     });
 
     ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
@@ -388,6 +404,47 @@ class _DetailPageState extends State<DetailPage> {
                             const SizedBox(
                               height: 16,
                             ),
+                            _histRead != null
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) => ReadPage(
+                                                  _histRead!.title.toString(),
+                                                  _histRead!.endpoint
+                                                      .toString())));
+                                    },
+                                    child: Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 8),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 16),
+                                        decoration: BoxDecoration(
+                                            color: MyColors().PRIMARY_TINT,
+                                            borderRadius:
+                                                BorderRadius.circular(14)),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Remix.pause_circle_fill,
+                                              color: MyColors().PRIMARY,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              'Lanjutkan ${_histRead!.subtitle.toString().substring(_histRead!.subtitle.toString().indexOf('chapter'), _histRead!.subtitle.toString().length)}',
+                                              style: MyTexts().text_p,
+                                            )
+                                          ],
+                                        )),
+                                  )
+                                : const SizedBox(),
                             Divider(
                               color: MyColors().SECONDARY,
                             ),
