@@ -75,8 +75,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Container(
                 margin: const EdgeInsets.only(top: 24),
-                child: InputIcon(
-                    _phone, (value) {}, 'Nomor telepon', Remix.phone_fill)
+                child: InputIcon(_phone, (value) {}, (value) {},
+                    'Nomor telepon', Remix.phone_fill)
 
                 //  TextField(
                 //     controller: _phone,
@@ -86,8 +86,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
             Container(
                 margin: const EdgeInsets.only(top: 16),
-                child:
-                    InputIcon(_code, (value) {}, 'Kode akses', Remix.key_fill)),
+                child: InputIcon(_code, (value) {}, (value) {}, 'Kode akses',
+                    Remix.key_fill)),
             Container(
               margin: const EdgeInsets.only(top: 16),
               width: double.infinity,

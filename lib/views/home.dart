@@ -34,7 +34,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _isLoading = false;
   List<Comic> _hotComic = [];
-  List<LocalSaveModel>? _history;
+  List<LocalSaveModel> _history = <LocalSaveModel>[];
   String greet = 'Ohayou';
   String? name = '';
 
@@ -43,14 +43,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var currentHour = DateTime.now().hour;
-      String greety = 'Ohayou';
+      String greety = 'Pagi';
 
-      if (currentHour <= 24) {
-        greety = 'oyasumi';
-      } else if (currentHour <= 19) {
-        greety = 'Konbawa';
+      if (currentHour <= 10) {
+        greety = 'Pagi';
       } else if (currentHour <= 14) {
-        greety = 'Konnichiwa';
+        greety = 'Siang';
+      } else if (currentHour <= 19) {
+        greety = 'Sore';
+      } else {
+        greety = 'Malam';
       }
 
       SharedPreferences sp = await SharedPreferences.getInstance();
@@ -136,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            _history != null
+            _history.length > 0
                 ? Container(
                     padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
                     child: Column(
@@ -151,21 +153,21 @@ class _HomePageState extends State<HomePage> {
                             height: 8,
                           ),
                           ComicChapter(
-                              title: _history![0]
+                              title: _history[0]
                                   .title
                                   .toString()
                                   .replaceAll('Komik ', ''),
-                              subtitle: _history![0]
+                              subtitle: _history[0]
                                   .subtitle
                                   .toString()
                                   .substring(
-                                      _history![0]
+                                      _history[0]
                                           .subtitle
                                           .toString()
                                           .indexOf('chapter'),
-                                      _history![0].subtitle.toString().length),
-                              intent: ReadPage(_history![0].title.toString(),
-                                  _history![0].endpoint.toString()))
+                                      _history[0].subtitle.toString().length),
+                              intent: ReadPage(_history[0].title.toString(),
+                                  _history[0].endpoint.toString()))
                         ]),
                   )
                 : const SizedBox(

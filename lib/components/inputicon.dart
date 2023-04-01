@@ -3,8 +3,12 @@ import 'package:mobile/style/colors.dart';
 import 'package:mobile/style/texts.dart';
 
 Widget InputIcon(TextEditingController ctrl, ValueChanged<String> changeCtrl,
-    String hint, IconData iconn) {
+    ValueChanged<String> funcSubmit, String hint, IconData iconn) {
   return TextField(
+    textInputAction: TextInputAction.search,
+    onSubmitted: (value) {
+      funcSubmit(value);
+    },
     controller: ctrl,
     onChanged: (content) {
       changeCtrl(content);

@@ -27,18 +27,24 @@ class _DiscoverPageState extends State<DiscoverPage> {
   bool _isLoading = false;
   List<Comic> _comics = [];
 
-  void searchComics(String q) async {
+  void SearchComics(String q) async {
+    if (q.isNotEmpty && q[q.length - 1] == ' ') {
+      GetComics(q);
+    } else {
+      setState(() {
+        _comics = [];
+      });
+    }
+  }
+
+  void GetComics(String q) async {
     setState(() {
       _isLoading = true;
     });
 
     List<Comic> comics = [];
-    if (q.isNotEmpty) {
-      // Timer(const Duration(seconds: 1), () async {
-      var callComics = ComicCall(context, 'search/$q', {}, false);
-      comics = await callComics.get(callComics.getComics());
-      // });
-    }
+    var callComics = ComicCall(context, 'search/$q', {}, false);
+    comics = await callComics.get(callComics.getComics());
 
     setState(() {
       _comics = comics;
@@ -55,7 +61,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
           ListView(
             children: [
               Container(
-                padding: EdgeInsets.fromLTRB(24, 16, 24, 24),
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,9 +86,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-                child: InputIcon(
-                    _search, searchComics, 'Cari disini...', Remix.search_line),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                child: InputIcon(_search, SearchComics, GetComics,
+                    'Cari disini...', Remix.search_line),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
+                child: Text(
+                  'TIPS: Tambah spasi di akhir untuk eksekusi',
+                  style: MyTexts().mini_text_s,
+                ),
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 90),

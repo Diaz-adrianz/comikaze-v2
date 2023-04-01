@@ -135,51 +135,79 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: buildBody(),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            height: 70,
-            child: Scaffold(
-              bottomNavigationBar: BottomNavigationBar(
-                  iconSize: 36,
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  currentIndex: currentIndex,
-                  onTap: (int index) {
-                    currentIndex = index;
-                    setState(() {});
-                  },
-                  selectedItemColor: MyColors().PRIMARY,
-                  items: [
-                    BottomNavigationBarItem(
-                        icon: Icon(
-                          Remix.home_line,
-                          color: MyColors().BLACK,
-                        ),
-                        activeIcon: Icon(Remix.home_fill),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon: Icon(Remix.compass_line, color: MyColors().BLACK),
-                        activeIcon: Icon(Remix.compass_fill),
-                        label: ''),
-                    BottomNavigationBarItem(
-                        icon:
-                            Icon(Remix.equalizer_line, color: MyColors().BLACK),
-                        activeIcon: Icon(Remix.equalizer_fill),
-                        label: ''),
-                  ]),
+    Future<bool> showExitPopup() async {
+      return await showDialog(
+            //show confirm dialogue
+            //the return value will be from "Yes" or "No" options
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Keluar'),
+              backgroundColor: MyColors().BLACK,
+              content: const Text('Yakin untuk meninggalkan aplikasi?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Tidak'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Ya'),
+                ),
+              ],
+            ),
+          ) ??
+          false; //if showDialouge had returned null, then return false
+    }
+
+    return WillPopScope(
+      onWillPop: showExitPopup,
+      child: Stack(
+        children: [
+          Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: buildBody(),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 70,
+              child: Scaffold(
+                bottomNavigationBar: BottomNavigationBar(
+                    iconSize: 36,
+                    showSelectedLabels: false,
+                    showUnselectedLabels: false,
+                    currentIndex: currentIndex,
+                    onTap: (int index) {
+                      currentIndex = index;
+                      setState(() {});
+                    },
+                    selectedItemColor: MyColors().PRIMARY,
+                    items: [
+                      BottomNavigationBarItem(
+                          icon: Icon(
+                            Remix.home_line,
+                            color: MyColors().BLACK,
+                          ),
+                          activeIcon: Icon(Remix.home_fill),
+                          label: ''),
+                      BottomNavigationBarItem(
+                          icon:
+                              Icon(Remix.compass_line, color: MyColors().BLACK),
+                          activeIcon: Icon(Remix.compass_fill),
+                          label: ''),
+                      BottomNavigationBarItem(
+                          icon: Icon(Remix.equalizer_line,
+                              color: MyColors().BLACK),
+                          activeIcon: Icon(Remix.equalizer_fill),
+                          label: ''),
+                    ]),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
